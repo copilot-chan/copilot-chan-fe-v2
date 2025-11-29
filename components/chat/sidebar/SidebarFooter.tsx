@@ -1,5 +1,5 @@
 import { SettingsToggle } from "../settings/settings-toggle";
-import { UserAvatar } from "@/components/ui/UserAvatar";
+import { UserAvatar } from "@/components/ui/user-avatar";
 
 export const SidebarFooter = () => (
   <div className="flex flex-col p-2">

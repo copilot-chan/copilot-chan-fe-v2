@@ -5,7 +5,7 @@
 
 "use client";
 
-import { Menu, MenuItem, MenuLabel } from "@/components/ui/Menu";
+import { Menu, MenuItem, MenuLabel } from "@/components/ui/menu";
 import { SettingsTab, SettingsTabConfig } from "./types";
 
 interface SettingsMenuProps {

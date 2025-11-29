@@ -1,7 +1,7 @@
 "use client";
 
 import { AdvancedSettings, MCPServerSettings, MemorySettings } from "./content";
-import { ThemeSettingsPanel } from "@/components/theme/ThemeSettingsPanel";
+import { ThemeSettingsPanel } from "@/components/theme/theme-settings-panel";
 import { SettingsTab, SettingsTabConfig } from "./types";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
