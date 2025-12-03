@@ -39,7 +39,7 @@ export function ChatInterface({ chatId }: { chatId?: string }) {
                 className="flex-1 overflow-hidden relative"
                 style={
                     {
-                        '--copilot-kit-primary-color': 'var(--primary)',
+                        '--copilot-kit-primary-color': 'var(--secondary)',
                         '--copilot-kit-background-color': 'var(--background)',
                         '--copilot-kit-response-button-background-color':
                             'var(--secondary)',
@@ -47,7 +47,7 @@ export function ChatInterface({ chatId }: { chatId?: string }) {
                             'var(--secondary-foreground)',
                         '--copilot-kit-separator-color': 'var(--border)',
                         '--copilot-kit-contrast-color':
-                            'var(--text-card-foreground)',
+                            'var(--card-foreground)',
 
                         backdropFilter: 'blur(10px)',
                         WebkitBackdropFilter: 'blur(10px)',

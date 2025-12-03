@@ -11,7 +11,7 @@ import { useTheme } from '@/components/providers/theme-provider';
 import { ThemeMode } from '@/types/theme';
 
 export function CopilotActionRender() {
-    const { setTheme, setThemeMode } = useTheme();
+    const { setTheme, setThemeMode, registerTheme } = useTheme();
 
     // --- search_memory ---
     useCopilotAction({
@@ -87,55 +87,82 @@ export function CopilotActionRender() {
     //     );
     //   },
     // });
-
+    
     useCopilotAction({
-        name: 'change_theme',
+        name: 'register_custom_theme',
         available: 'remote',
-        description:
-            'Change the application theme or color mode (light/dark/auto)',
+        description: 'Register a new custom theme with specific colors',
         parameters: [
             {
-                name: 'mode',
+                name: 'id',
                 type: 'string',
-                description:
-                    "The color mode to switch to ('light', 'dark', or 'auto')",
-                required: false,
-                enum: ['light', 'dark', 'auto'],
+                description: 'Unique ID for the theme (e.g., "ocean-blue")',
+                required: true,
             },
             {
-                name: 'themeId',
+                name: 'name',
                 type: 'string',
-                description:
-                    "The specific theme ID to apply (e.g., 'sunset', 'midnight', 'forest')",
-                required: false,
+                description: 'Display name for the theme (e.g., "Ocean Blue")',
+                required: true,
+            },
+            {
+                name: 'type',
+                type: 'string',
+                description: 'Base theme type ("light" or "dark")',
+                required: true,
+                enum: ['light', 'dark'],
+            },
+            {
+                name: 'colors',
+                type: 'object',
+                description: 'Color palette for the theme (HSL values with "hsl()" wrapper)',
+                required: true,
+                attributes: [
+                    { name: 'background', type: 'string', required: true },
+                    { name: 'foreground', type: 'string', required: true },
+                    { name: 'primary', type: 'string', required: true },
+                    { name: 'primaryForeground', type: 'string', required: true },
+                    { name: 'card', type: 'string', required: true },
+                    { name: 'cardForeground', type: 'string', required: true },
+                    { name: 'popover', type: 'string', required: true },
+                    { name: 'popoverForeground', type: 'string', required: true },
+                    { name: 'secondary', type: 'string', required: true },
+                    { name: 'secondaryForeground', type: 'string', required: true },
+                    { name: 'muted', type: 'string', required: true },
+                    { name: 'mutedForeground', type: 'string', required: true },
+                    { name: 'accent', type: 'string', required: true },
+                    { name: 'accentForeground', type: 'string', required: true },
+                    { name: 'destructive', type: 'string', required: true },
+                    { name: 'destructiveForeground', type: 'string', required: true },
+                    { name: 'border', type: 'string', required: true },
+                    { name: 'input', type: 'string', required: true },
+                    { name: 'ring', type: 'string', required: true },
+                ],
             },
         ],
-        handler: async ({ mode, themeId }) => {
-            if (mode) {
-                setThemeMode(mode as ThemeMode);
-            }
-
-            if (themeId) {
-                setTheme(themeId);
-            }
-
+        handler: async ({ id, name, type, colors }) => {
+            // Register the theme
+            registerTheme({
+                id,
+                name,
+                type: type as 'light' | 'dark',
+                colors,
+            });
+            setThemeMode(type as ThemeMode);
+            // Apply the theme immediately
+            setTheme(id);
+            
             return {
                 success: true,
-                mode,
-                themeId,
+                message: `Theme "${name}" registered and applied successfully.`,
             };
         },
         render: ({ status, args, result }) => {
-            const mode = args?.mode;
-            const themeId = args?.themeId;
-
             if (status !== 'complete') {
                 return (
                     <ThinkingMessage
-                        thinkingMessage={`🎨 Changing theme to ${
-                            themeId ? `"${themeId}"` : ''
-                        }${mode && themeId ? ' and ' : ''}${
-                            mode ? `${mode} mode` : ''
+                        thinkingMessage={`🎨 Creating new theme: ${
+                            args?.name || 'Custom Theme'
                         }...`}
                     />
                 );
@@ -144,7 +171,7 @@ export function CopilotActionRender() {
             return (
                 <MCPToolCall
                     status={status}
-                    name="change_theme"
+                    name="register_custom_theme"
                     args={args}
                     result={result}
                 />
