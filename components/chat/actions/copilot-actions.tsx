@@ -87,6 +87,85 @@ export function CopilotActionRender() {
     //     );
     //   },
     // });
+
+    useCopilotAction({
+        name: 'change_theme_mode',
+        available: 'remote',
+        description: 'Change the application theme mode (light/dark/auto)',
+        parameters: [
+            {
+                name: 'mode',
+                type: 'string',
+                description: "The color mode to switch to ('light', 'dark', or 'auto')",
+                required: true,
+                enum: ['light', 'dark', 'auto'],
+            },
+        ],
+        handler: async ({ mode }) => {
+            setThemeMode(mode as ThemeMode);
+            return {
+                success: true,
+                mode,
+            };
+        },
+        render: ({ status, args, result }) => {
+            const mode = args?.mode;
+            if (status !== 'complete') {
+                return (
+                    <ThinkingMessage
+                        thinkingMessage={`🌗 Changing theme mode to ${mode}...`}
+                    />
+                );
+            }
+            return (
+                <MCPToolCall
+                    status={status}
+                    name="change_theme_mode"
+                    args={args}
+                    result={result}
+                />
+            );
+        },
+    });
+
+    useCopilotAction({
+        name: 'change_theme_preset',
+        available: 'remote',
+        description: 'Apply a specific theme preset by ID',
+        parameters: [
+            {
+                name: 'themeId',
+                type: 'string',
+                description: "The specific theme ID to apply (e.g., 'sunset', 'midnight', 'forest')",
+                required: true,
+            },
+        ],
+        handler: async ({ themeId }) => {
+            setTheme(themeId);
+            return {
+                success: true,
+                themeId,
+            };
+        },
+        render: ({ status, args, result }) => {
+            const themeId = args?.themeId;
+            if (status !== 'complete') {
+                return (
+                    <ThinkingMessage
+                        thinkingMessage={`🎨 Applying theme preset: "${themeId}"...`}
+                    />
+                );
+            }
+            return (
+                <MCPToolCall
+                    status={status}
+                    name="change_theme_preset"
+                    args={args}
+                    result={result}
+                />
+            );
+        },
+    });
     
     useCopilotAction({
         name: 'register_custom_theme',
