@@ -45,14 +45,17 @@ export function ChatSidebar() {
 
     const handleCloseMobile = () => setMobileMenu(false);
 
-    const sidebarClasses = cn(
-        // Base styles
+    // Mobile styles
+    const mobileSidebarClasses = cn(
         'flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 ease-in-out',
-        // Mobile styles
         'fixed inset-y-0 left-0 z-50 w-64 transform',
-        !isMobileOpen && '-translate-x-full md:translate-x-0',
-        // Desktop styles
-        'md:relative md:transform-none',
+        isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+    );
+
+    // Desktop styles
+    const desktopSidebarClasses = cn(
+        'hidden md:flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 ease-in-out',
+        'relative',
         isCollapsed ? SIDEBAR_WIDTH.collapsed : SIDEBAR_WIDTH.expanded
     );
 
@@ -64,35 +67,32 @@ export function ChatSidebar() {
             />
             <MobileOverlay isOpen={isMobileOpen} onClose={handleCloseMobile} />
 
-            <div className={sidebarClasses}>
+            {/* Mobile Sidebar */}
+            <div className={mobileSidebarClasses}>
                 <SidebarHeader
                     isCollapsed={isCollapsed}
                     onNewChat={handleNewChat}
                     onToggleCollapse={toggleCollapse}
                     onCloseMobile={handleCloseMobile}
+                    isMobileView={true}
                 />
-
-                {isCollapsed && (
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                onClick={handleNewChat}
-                                variant="ghost"
-                                className="hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground transition-colors"
-                                aria-label="New chat"
-                            >
-                                <Plus className="w-5 h-5" />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">
-                            <p>New chat</p>
-                        </TooltipContent>
-                    </Tooltip>
-                )}
-
                 <Separator />
                 <ChatListSection isCollapsed={isCollapsed} />
+                <Separator />
+                <SidebarFooter />
+            </div>
 
+            {/* Desktop Sidebar */}
+            <div className={desktopSidebarClasses}>
+                <SidebarHeader
+                    isCollapsed={isCollapsed}
+                    onNewChat={handleNewChat}
+                    onToggleCollapse={toggleCollapse}
+                    onCloseMobile={handleCloseMobile}
+                    isMobileView={false}
+                />
+                <Separator />
+                <ChatListSection isCollapsed={isCollapsed} />
                 <Separator />
                 <SidebarFooter />
             </div>
