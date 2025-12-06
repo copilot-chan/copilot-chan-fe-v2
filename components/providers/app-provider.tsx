@@ -12,6 +12,7 @@ import { SettingsProvier } from '../chat/settings/settings-provider';
 import { ThemeProvider } from './theme-provider';
 import { OptimisticChatProvider } from './optimistic-chat-provider';
 import { TooltipProvider } from '../ui/tooltip';
+import { HTMLPreviewProvider } from './html-preview-provider';
 
 function CopilotKitWrapper({ children }: { children: React.ReactNode }) {
     const { token } = useAuth();
@@ -47,9 +48,11 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                         <SidebarProvider>
                             <SettingsProvier>
                                 <TooltipProvider delayDuration={300}>
-                                    <CopilotKitWrapper>
-                                        {children}
-                                    </CopilotKitWrapper>
+                                    <HTMLPreviewProvider>
+                                        <CopilotKitWrapper>
+                                            {children}
+                                        </CopilotKitWrapper>
+                                    </HTMLPreviewProvider>
                                 </TooltipProvider>
                             </SettingsProvier>
                         </SidebarProvider>
