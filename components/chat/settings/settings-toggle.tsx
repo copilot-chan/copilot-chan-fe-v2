@@ -18,7 +18,7 @@ export function SettingsToggle({ className }: { className?: string }) {
             className="hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground transition-colors"
         >
             <Settings className="w-5 h-5" />
-            {!isCollapsed && <Label> Settings</Label>}
+            {!isCollapsed && <Label className='select-none'> Settings</Label>}
         </Button>
     );
 }
