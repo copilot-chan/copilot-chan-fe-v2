@@ -6,6 +6,7 @@ interface SidebarContextType {
   isCollapsed: boolean;
   isMobileOpen: boolean;
   toggleCollapse: () => void;
+  setCollapsed: (collapsed: boolean) => void;
   toggleMobileMenu: () => void;
   setMobileMenu: (open: boolean) => void;
 }
@@ -35,6 +36,11 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const setCollapsed = (collapsed: boolean) => {
+    setIsCollapsed(collapsed);
+    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, JSON.stringify(collapsed));
+  };
+
   const toggleMobileMenu = () => {
     setIsMobileOpen((prev) => !prev);
   };
@@ -55,6 +61,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
         isCollapsed,
         isMobileOpen,
         toggleCollapse,
+        setCollapsed,
         toggleMobileMenu,
         setMobileMenu,
       }}
