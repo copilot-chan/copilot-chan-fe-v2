@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { Check, Copy, Play } from 'lucide-react'
 import { highlightCode } from '@/lib/shiki'
 import { useTheme } from '@/components/providers/theme-provider'
+import { useHTMLPreview } from '@/components/providers/html-preview-provider'
 
 interface CustomCodeBlockProps {
   inline?: boolean
@@ -83,7 +84,7 @@ function CodeBlockWithHighlight({ code, language }: CodeBlockWithHighlightProps)
           {language}
         </span>
         <div className="flex items-center gap-2">
-          <PreviewButton code={code} />
+          <PreviewButton code={code} language={language} />
           <CopyButton code={code} />
         </div>
       </div>
@@ -133,20 +134,25 @@ function CopyButton({ code }: { code: string }) {
 
 /**
  * Preview Button Component
- * Placeholder cho preview feature
+ * Chỉ hiển thị với HTML code blocks
  */
-function PreviewButton({ code }: { code: string }) {
+function PreviewButton({ code, language }: { code: string; language: string }) {
+  const { openPreview } = useHTMLPreview()
+  
+  // Chỉ show với HTML
+  const isPreviewable = ['html', 'htm'].includes(language.toLowerCase())
+  if (!isPreviewable) return null
+
   const handlePreview = () => {
-    console.log('Previewing code:', code)
-    alert('Preview feature coming soon!\n\nCode:\n' + code.substring(0, 100) + '...')
+    openPreview(code)
   }
 
   return (
     <button
       onClick={handlePreview}
       className="p-1.5 rounded-md hover:bg-background transition-colors text-muted-foreground hover:text-foreground"
-      title="Preview"
-      aria-label="Preview code"
+      title="Preview HTML"
+      aria-label="Preview HTML code"
     >
       <Play className="w-3.5 h-3.5" />
     </button>
