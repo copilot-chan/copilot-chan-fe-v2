@@ -6,6 +6,7 @@ import {
   onAuthStateChanged, 
   getIdToken, 
   signInWithPopup,
+  signOut,
   GoogleAuthProvider
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -15,6 +16,7 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   login: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -68,8 +70,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const logout = async () => {
+    try {
+      setLoading(true);
+      await signOut(auth);
+      setUser(null);
+      setToken(null);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
