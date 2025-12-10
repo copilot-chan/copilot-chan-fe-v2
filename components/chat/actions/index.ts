@@ -1,1 +1,1 @@
-export { CopilotActions } from "./CopilotActions";
+export { CopilotActionRender } from "./copilot-actions";
