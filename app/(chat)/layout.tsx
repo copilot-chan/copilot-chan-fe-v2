@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { ChatSidebar } from '@/components/chat/sidebar/ChatSidebar';
 import { Settings } from '@/components/chat/settings';
 import { ChatContentArea } from '@/components/chat/ChatContentArea';
+import { useApiWarmup } from '@/hooks/use-api-warmup';
 
 export default function ChatLayout({
     children,
@@ -20,6 +21,8 @@ export default function ChatLayout({
             router.push('/login');
         }
     }, [loading, user, router]);
+
+    useApiWarmup();
 
     if (loading) {
         return (

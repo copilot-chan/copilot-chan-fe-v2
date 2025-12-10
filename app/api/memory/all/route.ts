@@ -10,7 +10,6 @@ export async function GET(request: NextRequest) {
     const page = searchParams.get('page') || '1';
     const pageSize = searchParams.get('page_size') || '100';
     const authorization = request.headers.get('authorization');
-    console.log("AHIHI",authorization)
 
     if (!authorization) {
       throw new ChatSDKError('unauthorized:memory');
