@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AppError, handleApiError, checkFetchError } from "@/lib/error";
+import { BackendChatSchema, normalizeChat } from "@/lib/chat";
 
 export async function GET(
   req: NextRequest,
@@ -29,9 +30,19 @@ export async function GET(
 
     await checkFetchError(res);
 
-    const data = await res.json();
-    console.log(data);
-    return NextResponse.json(data);
+    const rawData = await res.json();
+    
+    // Zod validation
+    const parseResult = BackendChatSchema.safeParse(rawData);
+    if (!parseResult.success) {
+      console.error("[Chat API] Validation failed:", parseResult.error.flatten());
+      throw new AppError("Invalid chat data format", 500, "VALIDATION_ERROR");
+    }
+
+    // Normalize to UI domain
+    const normalizedChat = normalizeChat(parseResult.data);
+
+    return NextResponse.json(normalizedChat);
   } catch (error) {
     return handleApiError(error);
   }

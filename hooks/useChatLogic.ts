@@ -5,7 +5,6 @@ import useSWR from 'swr';
 import { useAuth } from '@/components/providers/auth-provider';
 import { fetcher } from '@/lib/api';
 import { Chat, Message } from '@/types/api';
-import { parseMessages } from '@/lib/partParsers';
 import {
     Message as CopilotMessage,
     Role,
@@ -14,6 +13,7 @@ import {
 import { useMemo, useEffect, useRef } from 'react';
 import { useCoAgent } from '@copilotkit/react-core';
 import { useOptimisticChat } from '@/components/providers/optimistic-chat-provider';
+import { UIChatData } from '@/lib/chat';
 
 export function useChatLogic() {
     const { sessionId } = useChatSession();
@@ -28,7 +28,8 @@ export function useChatLogic() {
     });
 
     // Fetch chat history if sessionId exists and we have a user token
-    const { data: chatData, isLoading } = useSWR<Chat>(
+    // API returns UIChatData (normalized messages)
+    const { data: chatData, isLoading } = useSWR<UIChatData>(
         sessionId && user && token
             ? [`/api/chats/${sessionId}?userId=${user.uid}`, token]
             : null,
@@ -116,11 +117,9 @@ export function useChatLogic() {
         }
     }, [state?.title, user, token]);
 
-    // Transform backend messages to Copilot messages
+    // Messages are already normalized from API
     const initialMessages = useMemo(() => {
-        if (!chatData?.events) return [];
-
-        return parseMessages(chatData.events);
+        return chatData?.messages ?? [];
     }, [chatData]);
 
     return {
