@@ -137,6 +137,17 @@ export interface VideoPart {
 }
 
 /**
+ * Future: Iframe part (placeholder)
+ */
+export interface IframePart {
+  iframe: {
+    url: string;
+    width?: string;
+    height?: string;
+  };
+}
+
+/**
  * Union type cho tất cả part types
  * Dễ dàng extend bằng cách add vào union
  */
@@ -144,7 +155,8 @@ export type MessagePart =
   | TextPart
   | FunctionResponsePart
   | ImagePart
-  | VideoPart;
+  | VideoPart
+  | IframePart;
 
 // ==========================================
 // Type Guards
@@ -163,6 +175,7 @@ export function isTextPart(part: MessagePart): part is TextPart {
 export function isFunctionResponsePart(
   part: MessagePart
 ): part is FunctionResponsePart {
+  console.log("[FunctionResponsePart]part", part);
   return (
     "functionResponse" in part &&
     part.functionResponse !== null &&
