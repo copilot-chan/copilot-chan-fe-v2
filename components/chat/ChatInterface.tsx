@@ -3,9 +3,10 @@
 import { CopilotChat, CopilotKitCSSProperties } from '@copilotkit/react-ui';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useMemo } from 'react';
-import { CustomMessages } from './message/CustomMessageComponents';
+import { CustomMessages } from './message/CustomMessage';
 import { useChatLogic } from '@/hooks/useChatLogic';
-import { useCopilotAction } from '@copilotkit/react-core';
+import { CustomCodeBlock } from './message/CustomCodeBlock';
+import { YoutubeEmbed } from './media/youtube';
 
 const CHAT_LABELS = {
     title: 'Copilot Chan',
@@ -15,15 +16,15 @@ const CHAT_LABELS = {
 const CHAT_INSTRUCTIONS = 'You are a helpful AI assistant.';
 
 export function ChatInterface({ chatId }: { chatId?: string }) {
-    const { isLoading, handleMessageSent, initialMessages, sessionId } =
-        useChatLogic();
+    const { isLoading, handleMessageSent, initialMessages, sessionId } =useChatLogic();
+
 
     // Wrapper for CustomMessages to merge history
-    const MessagesWrapper = useMemo(() => {
-        return (props: any) => (
-            <CustomMessages {...props} initialMessages={initialMessages} />
-        );
-    }, [initialMessages]);
+    // const MessagesWrapper = useMemo(() => {
+    //     return (props: any) => (
+    //         <CustomMessages {...props} initialMessages={initialMessages} />
+    //     );
+    // }, [initialMessages]);
 
     if (isLoading && sessionId) {
         return (
@@ -61,7 +62,13 @@ export function ChatInterface({ chatId }: { chatId?: string }) {
                     labels={CHAT_LABELS}
                     className="h-full w-full"
                     onSubmitMessage={handleMessageSent}
-                    Messages={MessagesWrapper}
+                    markdownTagRenderers={
+                        {
+                            code: CustomCodeBlock,
+                            a: YoutubeEmbed
+                        }
+                    }
+                    // Messages={MessagesWrapper}
                 />
             </div>
         </div>
