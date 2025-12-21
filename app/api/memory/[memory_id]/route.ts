@@ -5,10 +5,10 @@ const API_BASE_URL = process.env.MEMORY_API_BASE_URL || 'http://127.0.0.1:8000';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { memory_id: string } }
+  { params }: { params: Promise<{ memory_id: string }> }
 ) {
   try {
-    const { memory_id } = params;
+    const { memory_id } = await params;
     const authorization = request.headers.get('authorization');
 
     if (!authorization) {
