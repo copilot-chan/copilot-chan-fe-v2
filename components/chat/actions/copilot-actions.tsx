@@ -5,7 +5,7 @@ import {
     useCopilotAction,
 } from '@copilotkit/react-core';
 import React from 'react';
-import MCPToolCall from './UIToolCall';
+import MCPToolCall from '../../ui/UIToolCall';
 import { CheckCircle2, Database, Globe, Palette, Search } from 'lucide-react';
 import { useTheme } from '@/components/providers/theme-provider';
 import { ThemeMode } from '@/types/theme';

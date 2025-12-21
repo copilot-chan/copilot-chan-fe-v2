@@ -1,6 +1,6 @@
 'use client';
 
-import MCPToolCall from './UIToolCall';
+import MCPToolCall from '../../ui/UIToolCall';
 
 // ==========================================
 // Types

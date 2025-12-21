@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { ImperativePanelHandle } from 'react-resizable-panels'
 import { useHTMLPreview } from '@/components/providers/html-preview-provider'
 import { useSidebar } from '@/components/providers/sidebar-provider'
