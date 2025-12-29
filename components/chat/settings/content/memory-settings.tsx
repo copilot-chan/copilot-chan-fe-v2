@@ -184,7 +184,7 @@ function MemoryList() {
                             <CardContent className="pt-6">
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm break-words">
+                                        <p className="text-base break-words">
                                             {memory.memory}
                                         </p>
                                         <p className="text-xs text-muted-foreground mt-2">

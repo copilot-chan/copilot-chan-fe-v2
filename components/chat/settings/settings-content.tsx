@@ -6,6 +6,7 @@ import { SettingsTab, SettingsTabConfig } from "./types";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { Separator } from "@/components/ui/meparator";
 
 interface SettingsContentProps {
   activeTab: SettingsTab;
@@ -48,18 +49,21 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
       )}
 
       {/* Content chính */}
+      
       <div className="flex-1 overflow-y-auto">
-        <div className="p-6 md:p-8">
-          <DialogHeader className="mb-6">
-            <DialogTitle className="text-xl md:text-2xl">
+          {/*tiêu đề */}
+          <DialogHeader className="p-6 md:p-8">
+            <DialogTitle className="text-lg font-bold">
               {tabConfig?.title}
             </DialogTitle>
           </DialogHeader>
+          <Separator />
 
-          <div className="flex-1">
+
+          {/*nội dung */}
+          <div className="flex-1 p-4 text-base">
             <ContentComponent />
           </div>
-        </div>
       </div>
     </div>
   );

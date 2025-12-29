@@ -61,7 +61,7 @@ const MenuItemComponent = React.forwardRef<HTMLButtonElement, MenuItemProps>(
     <button
       ref={ref}
       className={cn(
-        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+        "flex items-center gap-3 rounded-lg px-3 p-4 text-sm font-medium transition-colors",
         "hover:bg-accent hover:text-accent-foreground",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         "disabled:pointer-events-none disabled:opacity-50",

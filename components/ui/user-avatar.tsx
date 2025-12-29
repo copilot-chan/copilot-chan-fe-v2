@@ -65,7 +65,7 @@ export function UserAvatar({
                     <div
                         className={cn(
                             'rounded-full flex items-center justify-center font-medium',
-                            'bg-accent text-primary-foreground select-none',
+                            'bg-primary text-primary-foreground select-none',
                             sizeClasses[size]
                         )}
                     >

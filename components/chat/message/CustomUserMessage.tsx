@@ -32,7 +32,7 @@ export const CustomUserMessage = (props: UserMessageProps) => {
 
   return (
       <div className="flex justify-end">
-          <div className="w-fit bg-secondary rounded-lg p-2 px-3 break-words whitespace-pre-wrap">
+          <div className="w-fit bg-secondary rounded-lg p-2 px-3 break-words whitespace-pre-wrap text-secondary-foreground">
               {isImageMessage ? (
                   <ImageRenderer
                       image={message.image!}

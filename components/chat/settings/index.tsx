@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 
 const SIDEBAR_WIDTH = " sm:max-w-full";
 const DIALOG_WIDTH =
-  "w-full max-w-full sm:max-w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl";
+  "w-full max-w-full sm:max-w-full md:max-w-2xl lg:max-w-5xl xl:max-w-6xl";
 const DIALOG_HIGHT = "h-[80vh] overflow-y-auto";
 
 export function Settings() {
@@ -36,11 +36,11 @@ export function Settings() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         side="settings"
-        className={`${DIALOG_WIDTH} ${DIALOG_HIGHT} right-0   border-l flex flex-col md:flex-row p-4 overflow-hidden `}
+        className={`${DIALOG_WIDTH} ${DIALOG_HIGHT} right-0 flex flex-col md:flex-row overflow-hidden gap-0 font-sans`}
         aria-label="Settings"
       >
         <aside
-          className={`${SIDEBAR_WIDTH} border-r border-border bg-sidebar flex-shrink-0 overflow-y-auto ${
+          className={`${SIDEBAR_WIDTH} bg-sidebar flex-shrink-0 overflow-y-auto ${
             showContent ? "hidden" : "flex"
           } md:flex flex-col`}
           role="complementary"
@@ -59,6 +59,7 @@ export function Settings() {
             showContent ? "flex" : "hidden md:flex"
           } flex-col overflow-hidden`}
         >
+          
           <SettingsContent
             activeTab={activeTab}
             tabs={SETTINGS_TABS}

@@ -7,6 +7,7 @@ import { CustomMessages } from './message/CustomMessage';
 import { useChatLogic } from '@/hooks/useChatLogic';
 import { CustomCodeBlock } from './message/CustomCodeBlock';
 import { YoutubeEmbed } from './media/youtube';
+import { CustomUserMessage } from './message/CustomUserMessage';
 
 const CHAT_LABELS = {
     title: 'Copilot Chan',
@@ -40,7 +41,7 @@ export function ChatInterface({ chatId }: { chatId?: string }) {
                 className="flex-1 overflow-hidden relative"
                 style={
                     {
-                        '--copilot-kit-primary-color': 'var(--secondary)',
+                        '--copilot-kit-primary-color': 'var(--primary)',
                         '--copilot-kit-background-color': 'var(--background)',
                         '--copilot-kit-response-button-background-color':
                             'var(--secondary)',
@@ -49,6 +50,7 @@ export function ChatInterface({ chatId }: { chatId?: string }) {
                         '--copilot-kit-separator-color': 'var(--border)',
                         '--copilot-kit-contrast-color':
                             'var(--card-foreground)',
+                        
 
                         backdropFilter: 'blur(10px)',
                         WebkitBackdropFilter: 'blur(10px)',
@@ -68,6 +70,9 @@ export function ChatInterface({ chatId }: { chatId?: string }) {
                             a: YoutubeEmbed
                         }
                     }
+                    UserMessage={CustomUserMessage}
+                    
+
                     // Messages={MessagesWrapper}
                 />
             </div>
