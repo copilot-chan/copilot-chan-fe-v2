@@ -65,7 +65,7 @@ export const SidebarHeader = ({
                     <div className="flex justify-between items-center w-full p-4">
                         <Link href="/" className="cursor-pointer">
                             <Label className="text-sidebar-accent-foreground text-lg mr-4 cursor-pointer">
-                                Copilot-Chan
+                                Copilot-chan
                             </Label>
                         </Link>
                         <Button

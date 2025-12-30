@@ -7,7 +7,7 @@ import { OptimisticChatProvider } from '@/components/providers/optimistic-chat-p
 import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
-    title: 'Copilot Chan',
+    title: 'Copilot-chan',
     description: 'AI Chatbot powered by CopilotKit',
 };
 
