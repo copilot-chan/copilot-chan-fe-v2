@@ -17,22 +17,22 @@ export const SETTINGS_TABS: SettingsTabConfig[] = [
     icon: Database,
     title: "Memory Settings",
   },
-  {
-    id: "mcp",
-    label: "MCP Server",
-    icon: Server,
-    title: "MCP Server Settings",
-  },
+  // {
+  //   id: "mcp",
+  //   label: "MCP Server",
+  //   icon: Server,
+  //   title: "MCP Server Settings",
+  // },
   {
     id: "appearance",
     label: "Appearance",
     icon: Palette,
     title: "Appearance Settings",
   },
-  {
-    id: "advanced",
-    label: "Advanced",
-    icon: Cog,
-    title: "Advanced Settings",
-  },
+  // {
+  //   id: "advanced",
+  //   label: "Advanced",
+  //   icon: Cog,
+  //   title: "Advanced Settings",
+  // },
 ]
