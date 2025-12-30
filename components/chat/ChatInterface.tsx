@@ -1,7 +1,7 @@
 'use client';
 
 import { CopilotChat, CopilotKitCSSProperties } from '@copilotkit/react-ui';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { ChatSkeleton } from './skeleton/ChatSkeleton';
 import { useMemo } from 'react';
 import { CustomMessages } from './message/CustomMessage';
 import { useChatLogic } from '@/hooks/useChatLogic';
@@ -28,11 +28,7 @@ export function ChatInterface({ chatId }: { chatId?: string }) {
     // }, [initialMessages]);
 
     if (isLoading && sessionId) {
-        return (
-            <div className="flex h-screen w-full items-center justify-center bg-background text-foreground">
-                <LoadingSpinner text="Loading conversation..." />
-            </div>
-        );
+        return <ChatSkeleton />;
     }
 
     return (

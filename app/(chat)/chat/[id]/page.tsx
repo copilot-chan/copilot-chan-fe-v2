@@ -9,7 +9,7 @@ export default function ChatPage() {
   const id = params?.id as string;
 
   return (
-    <div className="flex-1 flex flex-col h-full">
+    <div className="flex min-h-screen flex-col items-center justify-between">
       <CopilotActionRender />
       <ChatInterface chatId={id} />
     </div>

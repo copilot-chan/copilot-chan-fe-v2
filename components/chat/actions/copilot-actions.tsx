@@ -9,6 +9,7 @@ import MCPToolCall from '../../ui/UIToolCall';
 import { CheckCircle2, Database, Globe, Palette, Search } from 'lucide-react';
 import { useTheme } from '@/components/providers/theme-provider';
 import { ThemeMode } from '@/types/theme';
+import { YoutubeEmbed } from '../media/youtube/YoutubeEmbed';
 
 export function CopilotActionRender() {
     const { setTheme, setThemeMode, registerTheme } = useTheme();
@@ -59,6 +60,51 @@ export function CopilotActionRender() {
                     args={args?.content}
                     result={result}
                 />
+            );
+        },
+    });
+
+    // --- render_youtube ---
+    useCopilotAction({
+        name: 'render_youtube',
+        available: 'frontend',
+        description: 'Render a YouTube video from a URL or Video ID',
+        parameters: [
+            {
+                name: 'url',
+                type: 'string',
+                description: 'The YouTube URL or Video ID to render',
+                required: true,
+            },
+        ],
+        handler: async ({ url }) => {
+            return {
+                success: true,
+                url,
+                timestamp: new Date().toISOString(),
+            };
+        },
+        render: ({ status, args, result }) => {
+            const url = args?.url;
+            if (status !== 'complete') {
+                return (
+                    <ThinkingMessage
+                        thinkingMessage={`🎥 Đang chuẩn bị video YouTube: ${
+                            url || '...'
+                        }`}
+                    />
+                );
+            }
+            return (
+                <div className="flex flex-col gap-4">
+                    <MCPToolCall
+                        status={status}
+                        name="render_youtube"
+                        args={args}
+                        result={result}
+                    />
+                    <YoutubeEmbed href={url} />
+                </div>
             );
         },
     });
