@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { X, ExternalLink, RefreshCw } from 'lucide-react'
+import { X, ExternalLink, RefreshCw, Code2 } from 'lucide-react'
 import { useHTMLPreview } from '@/components/providers/html-preview-provider'
 
 /**
@@ -60,31 +60,36 @@ ${code}
   }
 
   return (
-    <div className="flex flex-col h-full bg-background rounded-lg text-card-foreground ">
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/30 flex-shrink-0 rounded-lg shadow-md mb-2">
-        <span className="text-sm font-medium">HTML Preview</span>
-        <div className="flex items-center gap-0.5">
+    <div className="flex flex-col h-full bg-background rounded-lg text-card-foreground overflow-hidden">
+      {/* Header - Redesigned */}
+      <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-muted-foreground/10 flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-md bg-primary/15">
+            <Code2 className="w-4 h-4 text-primary" />
+          </div>
+          <span className="text-sm font-semibold text-muted-foreground">HTML Preview</span>
+        </div>
+        <div className="flex items-center gap-1">
           <button
             onClick={handleRefresh}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            className="p-2 rounded-lg hover:bg-primary/10 transition-all duration-200 text-muted-foreground hover:text-primary group"
             title="Refresh"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
           </button>
           <button
             onClick={handleOpenInNewTab}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            className="p-2 rounded-lg hover:bg-primary/10 transition-all duration-200 text-muted-foreground hover:text-primary"
             title="Open in new tab"
           >
-            <ExternalLink className="w-3.5 h-3.5" />
+            <ExternalLink className="w-4 h-4" />
           </button>
           <button
             onClick={closePreview}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            className="p-2 rounded-lg hover:bg-destructive/10 transition-all duration-200 text-muted-foreground hover:text-destructive"
             title="Close"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -165,26 +170,31 @@ ${code}
       </div>
       
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/30 flex-shrink-0">
-        <span className="text-sm font-medium">HTML Preview</span>
+      <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-muted-foreground/10 flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-md bg-primary/15">
+            <Code2 className="w-4 h-4 text-primary" />
+          </div>
+          <span className="text-sm font-semibold text-muted-foreground">HTML Preview</span>
+        </div>
         <div className="flex items-center gap-1">
           <button
             onClick={handleRefresh}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            className="p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 text-muted-foreground hover:text-primary group"
             title="Refresh"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
           </button>
           <button
             onClick={handleOpenInNewTab}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            className="p-2 rounded-lg hover:bg-primary/10 transition-all duration-200 text-muted-foreground hover:text-primary"
             title="Open in new tab"
           >
             <ExternalLink className="w-4 h-4" />
           </button>
           <button
             onClick={closePreview}
-            className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            className="p-2 rounded-lg hover:bg-destructive/10 transition-all duration-200 text-muted-foreground hover:text-destructive"
             title="Close"
           >
             <X className="w-4 h-4" />
