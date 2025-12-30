@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { PanelLeftClose, PanelLeftOpen, Plus, X } from 'lucide-react';
@@ -27,9 +28,11 @@ export const SidebarHeader = ({
         return (
             <div className="flex flex-col w-full">
                 <div className="flex justify-between items-center w-full p-4">
-                    <Label className="text-sidebar-accent-foreground text-lg">
-                        Copilot-Chan
-                    </Label>
+                    <Link href="/" className="cursor-pointer">
+                        <Label className="text-sidebar-accent-foreground text-lg cursor-pointer">
+                            Copilot-chan
+                        </Label>
+                    </Link>
                     <Button
                         onClick={onCloseMobile}
                         variant="ghost"
@@ -60,9 +63,11 @@ export const SidebarHeader = ({
             {!isCollapsed && (
                 <div className="flex flex-col w-full">
                     <div className="flex justify-between items-center w-full p-4">
-                        <Label className="text-sidebar-accent-foreground text-lg mr-4">
-                            Copilot-Chan
-                        </Label>
+                        <Link href="/" className="cursor-pointer">
+                            <Label className="text-sidebar-accent-foreground text-lg mr-4 cursor-pointer">
+                                Copilot-Chan
+                            </Label>
+                        </Link>
                         <Button
                             onClick={onToggleCollapse}
                             variant="ghost"
