@@ -26,8 +26,8 @@ export function ChatSessionProvider({
     if (params?.id && typeof params.id === "string") {
       setSessionId(params.id);
     }
-    // If we are on the new chat page (root), and don't have an ID yet (or came from a specific chat), generate one
-    else if (pathname === "/" && (!sessionId || params?.id)) {
+    // If we are on the new chat page (root), always generate a new ID if we landed here
+    else if (pathname === "/") {
       setSessionId(crypto.randomUUID());
     }
   }, [params?.id, pathname]);

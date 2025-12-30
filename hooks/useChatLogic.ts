@@ -1,5 +1,5 @@
 import { useChatSession } from '@/components/providers/chat-session-provider';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { mutate } from 'swr';
 import useSWR from 'swr';
 import { useAuth } from '@/components/providers/auth-provider';
@@ -19,6 +19,7 @@ export function useChatLogic() {
     const { sessionId } = useChatSession();
     const pathname = usePathname();
     const { user, token } = useAuth();
+    const router = useRouter();
     const { addOptimisticSession } = useOptimisticChat();
     const optimisticAddedRef = useRef<Set<string>>(new Set());
 
@@ -58,7 +59,7 @@ export function useChatLogic() {
         // Only run optimistic update when creating NEW chat from home page
         if (pathname === '/' && sessionId && user && token) {
             // Navigate immediately
-            window.history.pushState(null, '', `/chat/${sessionId}`);
+            router.push(`/chat/${sessionId}`);
 
             // Check if we already added optimistic for this session
             if (optimisticAddedRef.current.has(sessionId)) {
