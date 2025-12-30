@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Trash2 } from "lucide-react";
 
 interface DeleteChatDialogProps {
   chatId: string;
@@ -53,7 +54,7 @@ export function DeleteChatDialog({ chatId, onDelete }: DeleteChatDialogProps) {
               className="absolute right-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity px-1 cursor-pointer"
               onClick={() => setOpen(true)}
             >
-              ×
+              <Trash2 className="w-4 h-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">
