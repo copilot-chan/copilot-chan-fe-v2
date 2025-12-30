@@ -17,20 +17,20 @@ export default function LoginPage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center bg-zinc-950 text-white">
+            <div className="flex h-screen items-center justify-center bg-background text-foreground">
                 <LoadingSpinner />
             </div>
         );
     }
 
     return (
-        <div className="flex h-screen w-full flex-col items-center justify-center bg-zinc-950 text-white">
-            <div className="flex flex-col items-center gap-4 p-8 rounded-lg border border-zinc-800 bg-zinc-900">
+        <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-foreground">
+            <div className="flex flex-col items-center gap-4 p-8 rounded-lg border border-zinc-800 bg-background">
                 <h1 className="text-2xl font-bold">Welcome to Copilot Chan</h1>
-                <p className="text-zinc-400">Please sign in to continue</p>
+                <p className="text-foreground">Please sign in to continue</p>
                 <button
                     onClick={login}
-                    className="px-4 py-2 rounded bg-white text-black font-medium hover:bg-zinc-200 transition-colors"
+                    className="px-4 py-2 rounded bg-primary text-background font-medium hover:bg-primary/80 transition-colors"
                 >
                     Sign in with Google
                 </button>
