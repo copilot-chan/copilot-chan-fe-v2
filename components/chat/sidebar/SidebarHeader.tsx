@@ -8,7 +8,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Separator } from '@/components/ui/meparator';
+import { Separator } from '@/components/ui/separator';
 
 export const SidebarHeader = ({
     isCollapsed,

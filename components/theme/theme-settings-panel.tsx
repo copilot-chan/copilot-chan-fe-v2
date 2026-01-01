@@ -8,7 +8,7 @@
 import { useTheme } from '@/components/providers/theme-provider';
 import { ThemeMode } from '@/types/theme';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/meparator';
+import { Separator } from '@/components/ui/separator';
 import { Sun, Moon, Monitor, Palette, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

@@ -6,7 +6,7 @@ import { SettingsTab, SettingsTabConfig } from "./types";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { Separator } from "@/components/ui/meparator";
+import { Separator } from "@/components/ui/separator";
 
 interface SettingsContentProps {
   activeTab: SettingsTab;

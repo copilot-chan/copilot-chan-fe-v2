@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "json-server": "json-server --watch db.json --port 3001"
   },
   "dependencies": {
     "@ag-ui/client": "0.0.42",
@@ -52,6 +53,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "json-server": "^0.17.4"
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/meparator';
+import { Separator } from '@/components/ui/separator';
 
 interface SidebarSkeletonProps {
     isCollapsed?: boolean;

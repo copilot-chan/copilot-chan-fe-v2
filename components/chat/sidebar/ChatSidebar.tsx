@@ -2,7 +2,7 @@ import { useChatSession } from '@/components/providers/chat-session-provider';
 import { useRouter } from 'next/navigation';
 import { useSidebar } from '@/components/providers/sidebar-provider';
 import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/meparator';
+import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import {
