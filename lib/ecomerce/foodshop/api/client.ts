@@ -1,16 +1,10 @@
-/**
- * Ecommerce API Client
- * 
- * Thiết kế đơn giản, dễ sử dụng:
- * - createApiClient({ token }) → tạo client với auth
- * - Client có các methods: get, post, patch, delete
- */
+// Imports removed as they are no longer needed for internal logic
 
 // ============================================================================
 // CONFIG
 // ============================================================================
 
-export const API_URL = process.env.NEXT_PUBLIC_ECOMMERCE_API_URL || 'http://localhost:3001';
+export const API_URL = process.env.NEXT_PUBLIC_ECOMMERCE_API_URL || 'http://localhost:8000';
 
 // ============================================================================
 // ERROR HANDLING
@@ -40,10 +34,10 @@ export interface ApiClientOptions {
 }
 
 export interface ApiClient {
-  get: <T>(endpoint: string) => Promise<T>;
-  post: <T>(endpoint: string, data?: unknown) => Promise<T>;
-  patch: <T>(endpoint: string, data?: unknown) => Promise<T>;
-  delete: <T>(endpoint: string) => Promise<T>;
+  get: <T>(endpoint: string, headers?: HeadersInit) => Promise<T>;
+  post: <T>(endpoint: string, data?: unknown, headers?: HeadersInit) => Promise<T>;
+  patch: <T>(endpoint: string, data?: unknown, headers?: HeadersInit) => Promise<T>;
+  delete: <T>(endpoint: string, data?: unknown, headers?: HeadersInit) => Promise<T>;
 }
 
 // ============================================================================
@@ -54,25 +48,56 @@ export function createApiClient(options: ApiClientOptions = {}): ApiClient {
   const { token, baseUrl = API_URL } = options;
 
   // Headers builder
-  const getHeaders = (): HeadersInit => ({
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  });
+  const getHeaders = (body?: any): Record<string, string> => {
+    const headers: Record<string, string> = {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+
+    // Only add JSON content type if body is NOT FormData
+    if (!(body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    return headers;
+  };
 
   // Response handler
   async function handleResponse<T>(response: Response): Promise<T> {
+    // Try to parse JSON body even on error
+    let data;
+    try {
+      const text = await response.text();
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = {};
+    }
+
     if (!response.ok) {
-      const message = response.status === 401 
-        ? 'Vui lòng đăng nhập để tiếp tục'
-        : `Lỗi: ${response.statusText}`;
+      // Use error message from backend if available
+      // Use error message from backend if available
+      const backendError = data.error || data.message || data.detail;
+      
+      let message = '';
+
+      if (Array.isArray(backendError)) {
+          // Handle FastAPI validation errors array
+          message = backendError.map((e: any) => e.msg || JSON.stringify(e)).join(', ');
+      } else if (typeof backendError === 'string') {
+          message = backendError;
+      } else if (backendError) {
+          message = JSON.stringify(backendError);
+      }
+      
+      if (!message) {
+         message = response.status === 401 
+            ? 'Vui lòng đăng nhập để tiếp tục'
+            : `Lỗi: ${response.statusText}`;
+      }
+      
       throw new ApiError(message, response.status);
     }
     
-    // Handle empty response
-    const text = await response.text();
-    if (!text) return {} as T;
-    
-    return JSON.parse(text);
+    return data as T;
   }
 
   // Request wrapper với error handling
@@ -81,9 +106,14 @@ export function createApiClient(options: ApiClientOptions = {}): ApiClient {
     options: RequestInit
   ): Promise<T> {
     try {
+      const { body, ...rest } = options;
       const response = await fetch(`${baseUrl}${endpoint}`, {
-        ...options,
-        headers: getHeaders(),
+        ...rest,
+        body,
+        headers: {
+          ...getHeaders(body),
+          ...options.headers,
+        },
       });
       return handleResponse<T>(response);
     } catch (error) {
@@ -93,22 +123,30 @@ export function createApiClient(options: ApiClientOptions = {}): ApiClient {
   }
 
   return {
-    get: <T>(endpoint: string) => 
-      request<T>(endpoint, { method: 'GET' }),
+    get: <T>(endpoint: string, headers?: HeadersInit) => 
+      request<T>(endpoint, { method: 'GET', headers }),
 
-    post: <T>(endpoint: string, data?: unknown) =>
+    post: <T>(endpoint: string, data?: unknown, headers?: HeadersInit) =>
       request<T>(endpoint, { 
         method: 'POST', 
-        body: data ? JSON.stringify(data) : undefined 
+        body: data instanceof FormData || data instanceof URLSearchParams 
+          ? (data as any) 
+          : (data ? JSON.stringify(data) : undefined),
+        headers
       }),
 
-    patch: <T>(endpoint: string, data?: unknown) =>
+    patch: <T>(endpoint: string, data?: unknown, headers?: HeadersInit) =>
       request<T>(endpoint, { 
         method: 'PATCH', 
-        body: data ? JSON.stringify(data) : undefined 
+        body: data ? JSON.stringify(data) : undefined,
+        headers
       }),
 
-    delete: <T>(endpoint: string) =>
-      request<T>(endpoint, { method: 'DELETE' }),
+    delete: <T>(endpoint: string, data?: unknown, headers?: HeadersInit) =>
+      request<T>(endpoint, { 
+        method: 'DELETE', 
+        body: data ? JSON.stringify(data) : undefined,
+        headers 
+      }),
   };
 }
