@@ -10,9 +10,15 @@ import {
   Users,
   Settings,
   Menu,
-  X
+  X,
+  LogOut,
+  ArrowLeft
 } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '@/components/providers/auth-provider';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 const sidebarItems = [
   {
@@ -46,6 +52,13 @@ const sidebarItems = [
 export function AdminSidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   return (
     <>
@@ -100,14 +113,37 @@ export function AdminSidebar() {
                 </ul>
             </nav>
 
-            {/* Footer / User Profile can go here */}
-            <div className="p-4 border-t">
-                <Link 
-                    href="/shop" 
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                    ← Back to Shop
-                </Link>
+            {/* Footer / User Profile */}
+            <div className="mt-auto border-t p-4 space-y-4">
+                {user && (
+                    <div className="flex items-center gap-3 px-2">
+                        <Avatar className="h-9 w-9 border">
+                            <AvatarImage src={user.avatar || undefined} alt={user.fullName || user.email} />
+                            <AvatarFallback>{(user.fullName?.[0] || user.email?.[0] || 'A').toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{user.fullName || 'Admin'}</p>
+                            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                        </div>
+                    </div>
+                )}
+                
+                <div className="grid gap-1">
+                    <Link 
+                        href="/" 
+                        className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md transition-colors"
+                    >
+                        <ArrowLeft size={18} />
+                        Back to Shop
+                    </Link>
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-md transition-colors w-full"
+                    >
+                        <LogOut size={18} />
+                        Logout
+                    </button>
+                </div>
             </div>
         </div>
       </aside>

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { createAdminApiClient } from '@/lib/ecomerce/foodshop/api/admin';
+import { useAuth } from '@/components/providers/auth-provider';
 
 interface CollectionFormProps {
   initialData?: Collection;
@@ -16,7 +17,8 @@ interface CollectionFormProps {
 
 export function CollectionForm({ initialData, id }: CollectionFormProps) {
   const router = useRouter();
-  const client = createAdminApiClient();
+  const { token } = useAuth();
+  const client = createAdminApiClient({ token });
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<Collection>>({
@@ -36,8 +38,17 @@ export function CollectionForm({ initialData, id }: CollectionFormProps) {
     setLoading(true);
 
     try {
+        const submitData = {
+            ...formData,
+            // Ensure seo object is updated if title/desc changed
+            seo: { 
+                title: formData.title || initialData?.seo?.title || '', 
+                description: formData.description || initialData?.seo?.description || '' 
+            },
+        };
+
         if (id) {
-            await client.updateCollection(id, formData);
+            await client.updateCollection(id, submitData);
             toast.success('Collection updated');
         } else {
              // Auto generate handle
@@ -56,7 +67,7 @@ export function CollectionForm({ initialData, id }: CollectionFormProps) {
         router.push('/admin/collections');
         router.refresh(); 
     } catch (error) {
-        toast.error('Something went wrong');
+        toast.error(error instanceof Error ? error.message : 'Something went wrong');
         console.error(error);
     } finally {
         setLoading(false);
