@@ -17,9 +17,8 @@ Dùng để test các API yêu cầu quyền Admin:
   - *Body:* `{ "email": "user@example.com", "password": "securepassword" }`
   - *Response:* `{ "access_token": "eyJhb...", "token_type": "bearer", "user": { ...UserObject... } }`
 - **GET /auth/me**: Lấy thông tin user hiện tại (Yêu cầu Header `Authorization: Bearer <token>`).
-- **PATCH /auth/me**: Cập nhật thông tin user hiện tại.
-  - *Body:* `{ "full_name": "Nguyen Van B", "avatar": "https://..." }`
-  - *Response:* `{ ...UserObject... }`
+- **PATCH /auth/me**: Cập nhật thông tin cá nhân.
+  - *Body:* `{ "full_name": "string", "avatar": "url" }` (Tất cả fields là optional).
 
 ## 2. Products (Sản phẩm) /products
 
@@ -58,6 +57,11 @@ Quản lý danh sách món ăn.
 - **GET /collections**: Lấy danh sách các Menu.
 - **GET /collections/{handle}**: Chi tiết (kèm danh sách products nếu cần).
 - **POST /collections** (Admin): Tạo danh mục.
+- **PATCH /collections/{collection_id}** (Admin): Cập nhật thông tin danh mục.
+  - *Behavior:* Chỉ sửa khi collection chưa có sản phẩm liên kết.
+  - *Body:* `{ "handle": "string", "title": "string", "description": "string", "seo": { ... } }` (Tất cả fields là optional).
+- **DELETE /collections/{collection_id}** (Admin): Xóa danh mục.
+  - *Behavior:* Chỉ xóa khi không còn sản phẩm nào thuộc danh mục này.
 
 ## 4. Cart (Giỏ hàng) /cart
 
