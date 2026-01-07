@@ -15,10 +15,9 @@ export function ChatList() {
     const { generateNewSession } = useChatSession();
 
     const { data: sessions } = useSWR<Chat[]>(
-        user && token ? [`/api/chats?userId=${user.uid}`, token] : null,
+        user && token ? [`/api/chats?userId=${user.id}`, token] : null,
         fetcher,
         {
-            suspense: true,
             fallbackData: [],
             revalidateOnFocus: false,
         }
@@ -27,13 +26,13 @@ export function ChatList() {
     const handleDelete = async (id: string): Promise<void> => {
         // Optimistic update: remove item immediately
         mutate(
-            [`/api/chats?userId=${user?.uid}`, token],
+            [`/api/chats?userId=${user?.id}`, token],
             (currentData: Chat[] | undefined) =>
                 currentData?.filter((chat) => chat.id !== id),
             false
         );
 
-        const res = await fetch(`/api/chats/${id}?userId=${user?.uid}`, {
+        const res = await fetch(`/api/chats/${id}?userId=${user?.id}`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -42,12 +41,12 @@ export function ChatList() {
 
         if (!res.ok) {
             // Revert optimistic update
-            mutate([`/api/chats?userId=${user?.uid}`, token]);
+            mutate([`/api/chats?userId=${user?.id}`, token]);
             throw new Error('Failed to delete chat');
         }
 
         // Revalidate to ensure sync
-        mutate([`/api/chats?userId=${user?.uid}`, token]);
+        mutate([`/api/chats?userId=${user?.id}`, token]);
 
         // If we deleted the current chat, redirect to new chat
         if (window.location.pathname === `/chat/${id}`) {
