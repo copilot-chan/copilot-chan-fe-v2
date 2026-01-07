@@ -1,101 +1,149 @@
-# Tài Liệu Đặc Tả API (API Specifications)
+# Tài Liệu Đặc Tả API (API Specifications) - Final Ver.
 
-Tài liệu này mô tả các endpoint và cấu trúc dữ liệu cần thiết để Backend cung cấp cho Frontend Copilot Chan hoạt động (Phiên bản Food Shop).
+Tài liệu này mô tả các endpoint và cấu trúc dữ liệu Backend cung cấp cho Frontend (Food Shop).
 
-Hiện tại, dự án đang sử dụng `json-server` làm mock backend. Backend thực tế cần đảm bảo trả về dữ liệu đúng theo cấu trúc JSON dưới đây.
+**Base URL (Dev):** `http://localhost:8000`
 
-**Base URL (Dev):** `http://localhost:3001`
+### 🔑 Tài khoản Admin mặc định
+Dùng để test các API yêu cầu quyền Admin:
+- **Email:** `admin@foodshop.com`
+- **Password:** `admin123`
 
-## 1. Products (Sản phẩm)
+## 1. Authentication (Xác thực) /auth
 
-### Lấy danh sách sản phẩm
-- **Endpoint:** `GET /products`
-- **Query Params:**
-  - `q`: Tìm kiếm theo tên (nếu có tính năng search)
-  - `collections_like`: Lọc theo handle của collection (Ví dụ: `GET /products?collections_like=mon-chinh`)
-  - `_sort`: Sắp xếp (ví dụ: `createdAt`)
-  - `_order`: Thứ tự (`asc`, `desc`)
+- **POST /auth/register**: Đăng ký người dùng mới.
+  - *Body:* `{ "email": "user@example.com", "password": "securepassword", "full_name": "Nguyen Van A" }`
+- **POST /auth/login**: Đăng nhập lấy Token.
+  - *Body:* `{ "email": "user@example.com", "password": "securepassword" }`
+  - *Response:* `{ "access_token": "eyJhb...", "token_type": "bearer", "user": { ...UserObject... } }`
+- **GET /auth/me**: Lấy thông tin user hiện tại (Yêu cầu Header `Authorization: Bearer <token>`).
+- **PATCH /auth/me**: Cập nhật thông tin user hiện tại.
+  - *Body:* `{ "full_name": "Nguyen Van B", "avatar": "https://..." }`
+  - *Response:* `{ ...UserObject... }`
 
-### Chi tiết sản phẩm
-- **Endpoint:** `GET /products?handle={handle}` (Hoặc `GET /products/{id}`)
-- **Lưu ý:** Frontend hiện tại chủ yếu query theo `handle` để làm SEO friendly URL.
+## 2. Products (Sản phẩm) /products
+
+Quản lý danh sách món ăn.
+
+- **GET /products**: Lấy danh sách (Public).
+  - *Query Params:* `q` (tìm tên), `collections_like` (slug danh mục), `_sort` (created_at), `_order` (asc/desc).
+- **GET /products/{id}**: Chi tiết sản phẩm.
+- **POST /products** (Admin): Tạo món mới.
+  - *Body:* JSON thông tin sản phẩm (xem bên dưới).
+- **PATCH /products/{id}** (Admin): Cập nhật giá/thông tin.
+- **DELETE /products/{id}** (Admin): Xóa món.
 
 ### Cấu trúc dữ liệu (Product Object)
 ```json
 {
-  "id": "string",
-  "handle": "string (slug-duy-nhat)",
-  "title": "string (Tên sản phẩm)",
-  "description": "string (Mô tả ngắn)",
-  "descriptionHtml": "string (Mô tả định dạng HTML)",
-  "availableForSale": "boolean",
-  "status": "active | draft | archived",
-  "priceRange": {
-    "maxVariantPrice": { "amount": "string", "currencyCode": "VND" },
-    "minVariantPrice": { "amount": "string", "currencyCode": "VND" }
-  },
-  "featuredImage": {
-    "url": "string (URL ảnh)",
-    "altText": "string",
-    "width": "number",
-    "height": "number"
-  },
-  "images": [
-    { "url": "string", "altText": "string", "width": "number", "height": "number" }
-  ],
-  "options": [
-    {
-      "id": "string",
-      "name": "string (Ví dụ: Size, Topping)",
-      "values": ["string"]
-    }
-  ],
-  "variants": [
-    {
-      "id": "string",
-      "title": "string (Tên variant)",
-      "availableForSale": "boolean",
-      "selectedOptions": [
-        { "name": "string", "value": "string" }
-      ],
-      "price": { "amount": "string", "currencyCode": "VND" }
-    }
-  ],
-  "collections": ["string (list of collection handles)"],
-  "tags": ["string"],
-  "seo": { "title": "string", "description": "string" },
-  "updatedAt": "ISO Date String"
+  "id": "uuid-string",
+  "handle": "ga-ran-gion",
+  "title": "Gà Rán Giòn",
+  "description": "Thơm ngon mời bạn ăn nha",
+  "descriptionHtml": "<p>...</p>",
+  "status": "active", // active | draft | archived
+  "price": { "amount": "50000", "currencyCode": "VND" },
+  "originalPrice": { "amount": "70000", "currencyCode": "VND" }, // Có giá trị này -> Hiển thị Sale
+  "featuredImage": { "url": "https://...", "altText": "Gà rán" },
+  "images": [ { "url": "...", "altText": "..." } ],
+  "collections": ["menu-trang-chu", "mon-chinh"],
+  "tags": ["ga-ran", "fast-food"],
+  "seo": { "title": "...", "description": "..." },
+  "createdAt": "2024-01-01T12:00:00Z"
 }
 ```
 
-## 2. Collections (Danh mục)
+## 3. Collections (Danh mục) /collections
 
-### Lấy danh sách danh mục
-- **Endpoint:** `GET /collections`
+- **GET /collections**: Lấy danh sách các Menu.
+- **GET /collections/{handle}**: Chi tiết (kèm danh sách products nếu cần).
+- **POST /collections** (Admin): Tạo danh mục.
 
-### Chi tiết danh mục
-- **Endpoint:** `GET /collections?handle={handle}`
+## 4. Cart (Giỏ hàng) /cart
 
-### Cấu trúc dữ liệu (Collection Object)
+Giỏ hàng cá nhân (1 giỏ hàng cho mỗi người dùng). Yêu cầu Header `Authorization: Bearer <token>`.
+
+- **GET /cart**: Xem giỏ hàng của người dùng hiện tại (Tự động tạo nếu chưa có).
+- **POST /cart/lines**: Thêm món vào giỏ hàng.
+  - *Body:* `{ "merchandiseId": "product-uuid", "quantity": 1 }`
+- **PATCH /cart/lines/{productId}**: Cập nhật số lượng của một món trong giỏ.
+  - *Body:* `{ "quantity": 5 }`
+- **DELETE /cart/lines/{productId}**: Xóa một món khỏi giỏ hàng.
+- **DELETE /cart/lines**: Xóa nhiều món khỏi giỏ hàng (Gửi danh sách ID trong body).
+  - *Body:* `{ "productIds": ["uuid1", "uuid2"] }`
+- **GET /cart**: Xem giỏ hàng của người dùng hiện tại.
+
+### Cấu trúc dữ liệu (Cart Object)
 ```json
 {
-  "handle": "string (slug)",
-  "title": "string (Tên danh mục)",
-  "description": "string",
-  "seo": { "title": "string", "description": "string" },
-  "updatedAt": "ISO Date String"
+  "id": "cart-uuid",
+  "lines": [
+    {
+      "id": "line-uuid",
+      "quantity": 2,
+      "cost": { "totalAmount": { "amount": "100000", "currencyCode": "VND" } },
+      "merchandise": {
+        "id": "product-uuid",
+        "title": "Gà Rán Giòn",
+        "product": { ...ProductSummary... }
+      }
+    }
+  ],
+  "cost": {
+    "totalAmount": { "amount": "100000", "currencyCode": "VND" }
+  }
 }
 ```
 
-## 3. Menus (Menu điều hướng)
+## 5. Orders (Đơn hàng) /orders
+
+- **POST /orders/**: Tạo đơn hàng từ giỏ hàng hiện tại (Checkout).
+  - *Body:* `{ "email": "string", "shippingAddress": { "address1": "...", "city": "...", "country": "Vietnam" } }`
+- **GET /orders/**: Danh sách đơn hàng của tôi.
+- **GET /orders/{order_id}**: Chi tiết đơn hàng.
+- **POST /orders/{order_id}/cancel**: Người dùng hủy đơn hàng (chỉ khả dụng khi đơn chưa xử lý).
+- **PATCH /orders/{order_id}** (Admin only): Cập nhật trạng thái đơn hàng.
+
+
+### Cấu trúc dữ liệu (Order Object)
+```json
+{
+  "id": "order-uuid",
+  "orderNumber": 1001,
+  "financialStatus": "pending", // pending | paid | refunded
+  "fulfillmentStatus": "unfulfilled", // unfulfilled | fulfilled
+  "currentTotalPrice": { "amount": "100000", "currencyCode": "VND" },
+  "lineItems": [
+    {
+      "title": "Gà Rán Giòn",
+      "quantity": 2,
+      "originalTotalPrice": { "amount": "100000", "currencyCode": "VND" }
+    }
+  ],
+  "shippingAddress": {
+    "address1": "123 Đường ABC",
+    "city": "HCM",
+    "country": "Vietnam"
+  },
+  "processedAt": "2024-01-01T12:05:00Z"
+}
+```
+
+## 6. Users (Admin Only) /users
+- **GET /users**: Quản lý danh sách người dùng.
+
+## 7. Common Objects
+### Money V2
+```json
+{ "amount": "string", "currencyCode": "VND" }
+```
+
+## 8. Menus (Menu điều hướng) /menus
 
 Frontend sử dụng 2 menu chính: Header và Footer.
 
-### Lấy menu
-- **Endpoint:** `GET /menus?handle={menu_handle}`
-- **Menu Handles:**
-  - `next-js-frontend-header-menu`: Menu chính trên header.
-  - `next-js-frontend-footer-menu`: Menu dưới footer.
+- **GET /menus?handle={menu_handle}**: Lấy menu theo handle.
+  - *Handles:* `next-js-frontend-header-menu`, `next-js-frontend-footer-menu`
 
 ### Cấu trúc dữ liệu (Menu Object)
 ```json
@@ -104,64 +152,38 @@ Frontend sử dụng 2 menu chính: Header và Footer.
   "items": [
     {
       "title": "string (Tên hiển thị)",
-      "path": "string (Đường dẫn nội bộ, ví dụ: /shop/search)"
+      "path": "string (Đường dẫn nội bộ)"
     }
   ]
 }
 ```
 
-## 4. Pages (Trang tĩnh)
+## 9. Pages (Trang tĩnh) /pages
 
 Dùng cho các trang như About, Contact, Policy.
 
-- **Endpoint:** `GET /pages?handle={handle}`
+- **GET /pages?handle={handle}**: Lấy nội dung trang.
 
 ### Cấu trúc dữ liệu (Page Object)
 ```json
 {
-  "id": "string",
-  "handle": "string",
-  "title": "string",
-  "body": "string (Nội dung HTML chính)",
-  "bodySummary": "string (Tóm tắt)",
-  "seo": { "title": "string", "description": "string" },
-  "createdAt": "ISO Date String",
-  "updatedAt": "ISO Date String"
+  "id": "uuid",
+  "handle": "about-us",
+  "title": "Về Chúng Tôi",
+  "body": "<div>Nội dung HTML...</div>",
+  "bodySummary": "Tóm tắt...",
+  "seo": { "title": "...", "description": "..." },
+  "createdAt": "ISO Date"
 }
 ```
 
-## 5. Cart (Giỏ hàng)
+## 11. Upload (Tải lên) /upload
 
-*Lưu ý: Với JSON Server, các thao tác cart có thể được giả lập hoặc lưu local storage. Nếu triển khai Backend thật, cần các API sau:*
+Dùng để upload ảnh sản phẩm/avatar.
 
-- **GET /cart?id={cartId}**: Lấy thông tin giỏ hàng.
-- **POST /cart**: Tạo giỏ hàng mới.
-- **POST /cart/add**: Thêm sản phẩm vào giỏ.
-- **POST /cart/update**: Cập nhật số lượng.
-- **POST /cart/remove**: Xóa sản phẩm.
+- **POST /upload**: Upload file ảnh.
+  - *Content-Type:* `multipart/form-data`
+  - *Body:* `file` (Binary)
+  - *Response:* `{ "url": "https://supbase.../image.jpg" }`
 
-### Cấu trúc dữ liệu (Cart Object)
-```json
-{
-  "id": "string",
-  "checkoutUrl": "string",
-  "totalQuantity": "number",
-  "cost": {
-    "subtotalAmount": { "amount": "string", "currencyCode": "VND" },
-    "totalAmount": { "amount": "string", "currencyCode": "VND" },
-    "totalTaxAmount": { "amount": "string", "currencyCode": "VND" }
-  },
-  "lines": [
-    {
-      "id": "string",
-      "quantity": "number",
-      "cost": { "totalAmount": { "amount": "string", "currencyCode": "VND" } },
-      "merchandise": {
-        "id": "string (Variant ID)",
-        "title": "string",
-        "product": { ...ProductSummary... }
-      }
-    }
-  ]
-}
-```
+## 12. Common Objects
