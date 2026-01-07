@@ -56,6 +56,7 @@ export default function ProductPage() {
 
   useEffect(() => {
     setIsLoading(true);
+    console.log("handle", handle);
     getProduct(handle)
       .then((data) => {
         if (!data) {
@@ -91,7 +92,7 @@ export default function ProductPage() {
     return notFound();
   }
 
-  const productJsonLd = {
+    const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
@@ -102,9 +103,9 @@ export default function ProductPage() {
       availability: product.availableForSale
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
-      priceCurrency: product.priceRange.minVariantPrice.currencyCode,
-      highPrice: product.priceRange.maxVariantPrice.amount,
-      lowPrice: product.priceRange.minVariantPrice.amount,
+      priceCurrency: product.price.currencyCode,
+      highPrice: product.originalPrice ? product.originalPrice.amount : product.price.amount,
+      lowPrice: product.price.amount,
     },
   };
 
@@ -124,6 +125,7 @@ export default function ProductPage() {
                 src: image.url,
                 altText: image.altText,
               }))}
+              
             />
           </div>
 
@@ -139,20 +141,20 @@ export default function ProductPage() {
             <ul className="flex w-full gap-4 overflow-x-auto pt-1">
               {relatedProducts.map((relatedProduct) => (
                 <li
-                  key={relatedProduct.handle}
+                  key={relatedProduct.id}
                   className="aspect-square w-full flex-none min-[475px]:w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5"
                 >
                   <Link
                     className="relative h-full w-full"
-                    href={`/product/${relatedProduct.handle}`}
+                    href={`/product/${relatedProduct.id}`}
                     prefetch={true}
                   >
                     <GridTileImage
                       alt={relatedProduct.title}
                       label={{
                         title: relatedProduct.title,
-                        amount: relatedProduct.priceRange.maxVariantPrice.amount,
-                        currencyCode: relatedProduct.priceRange.maxVariantPrice.currencyCode,
+                        amount: relatedProduct.price.amount,
+                        currencyCode: relatedProduct.price.currencyCode,
                       }}
                       src={relatedProduct.featuredImage?.url}
                       fill
