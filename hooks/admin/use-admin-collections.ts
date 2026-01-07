@@ -4,15 +4,20 @@ import { useState, useEffect } from 'react';
 import { createAdminApiClient } from '@/lib/ecomerce/foodshop/api/admin';
 import { Collection } from '@/lib/ecomerce/foodshop/types';
 import { toast } from 'sonner';
+import { useAuth } from '@/components/providers/auth-provider';
+import { useMemo, useCallback } from 'react';
 
 export function useAdminCollections() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   
-  const adminClient = createAdminApiClient();
+  const { token } = useAuth();
+  
+  const adminClient = useMemo(() => createAdminApiClient({ token }), [token]);
 
-  const fetchCollections = async () => {
+  const fetchCollections = useCallback(async () => {
+    if (!token) return;
     try {
       setLoading(true);
       const data = await adminClient.getCollections();
@@ -22,32 +27,25 @@ export function useAdminCollections() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminClient, token]);
 
   useEffect(() => {
     fetchCollections();
-  }, []);
+  }, [fetchCollections]);
 
-  const deleteCollection = async (id: string) => {
+  const deleteCollection = useCallback(async (id: string) => {
     try {
       await adminClient.deleteCollection(id);
-      setCollections(prev => prev.filter(c => c.handle !== id)); // Handle is used as ID in mock? check types
-      // Wait, Collection type has handle but maybe not ID field explicit in mock?
-      // In db.json collections have "handle" but no "id" field usually?
-      // Let's check db.json.
-      // If collection relies on handle as ID, we need to be careful.
-      // But admin client expects ID.
-      // Mock server usually adds 'id' if not present, but let's assume handle is key.
-      // Actually json-server uses 'id' by default.
+      setCollections(prev => prev.filter(c => c.id !== id));
       
       toast.success("Collection deleted");
-      fetchCollections(); // Refresh to be safe
+      fetchCollections(); 
     } catch (err) {
       console.error("Delete failed", err);
-      toast.error("Failed to delete collection");
+      toast.error(err instanceof Error ? err.message : "Failed to delete collection"); // Show backend error message
       throw err;
     }
-  };
+  }, [adminClient, fetchCollections]);
 
-  return { collections, loading, error, refresh: fetchCollections, deleteCollection };
+  return useMemo(() => ({ collections, loading, error, refresh: fetchCollections, deleteCollection }), [collections, loading, error, fetchCollections, deleteCollection]);
 }
