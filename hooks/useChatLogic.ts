@@ -32,7 +32,7 @@ export function useChatLogic() {
     // API returns UIChatData (normalized messages)
     const { data: chatData, isLoading } = useSWR<UIChatData>(
         sessionId && user && token
-            ? [`/api/chats/${sessionId}?userId=${user.uid}`, token]
+            ? [`/api/chats/${sessionId}?userId=${user.id}`, token]
             : null,
         fetcher,
         {
@@ -48,7 +48,7 @@ export function useChatLogic() {
 
     // Fetch all chats for sidebar
     const { data: allChats } = useSWR<Chat[]>(
-        user && token ? [`/api/chats?userId=${user.uid}`, token] : null,
+        user && token ? [`/api/chats?userId=${user.id}`, token] : null,
         fetcher,
         {
             revalidateOnFocus: false,
@@ -81,7 +81,7 @@ export function useChatLogic() {
                 const optimisticChat: Chat = {
                     id: sessionId,
                     appName: 'copilot-assistant',
-                    userId: user.uid,
+                    userId: user.id,
                     events: [],
                     state: {
                         title:
@@ -94,7 +94,7 @@ export function useChatLogic() {
 
                 // Optimistic update
                 mutate(
-                    [`/api/chats?userId=${user.uid}`, token],
+                    [`/api/chats?userId=${user.id}`, token],
                     (currentData: Chat[] | undefined) => {
                         const existing = currentData || [];
                         return [optimisticChat, ...existing];
@@ -105,7 +105,7 @@ export function useChatLogic() {
 
             // Revalidate after 2s
             setTimeout(() => {
-                mutate([`/api/chats?userId=${user.uid}`, token]);
+                mutate([`/api/chats?userId=${user.id}`, token]);
             }, 2000);
         }
     };
@@ -114,7 +114,7 @@ export function useChatLogic() {
         if (state?.title && user && token) {
             // Debounce or check if needed, but for now just refresh the list
             // to reflect the new title in the sidebar
-            mutate([`/api/chats?userId=${user.uid}`, token]);
+            mutate([`/api/chats?userId=${user.id}`, token]);
         }
     }, [state?.title, user, token]);
 
