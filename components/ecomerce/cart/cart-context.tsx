@@ -1,6 +1,6 @@
 'use client';
 
-import type { Cart, CartItem, Product, ProductVariant } from '@/lib/ecomerce/foodshop/types';
+import type { Cart, CartItem, Product } from '@/lib/ecomerce/foodshop/types';
 import { useCartApi } from '@/components/providers/ecommerce-api-provider';
 import React, {
   createContext,
@@ -21,14 +21,11 @@ interface CartContextType {
   cart: Cart | undefined;
   isLoading: boolean;
   error: string | null;
-  selectedLineIds: string[]; // [NEW] Selected items for checkout
   
   // Actions
-  addCartItem: (variant: ProductVariant, product: Product) => void;
+  addCartItem: (product: Product, quantity?: number) => void;
   updateCartItem: (merchandiseId: string, updateType: UpdateType) => void;
   refreshCart: () => Promise<void>;
-  toggleLineItem: (lineId: string) => void; // [NEW] Toggle selection
-  selectAllResult: (selected: boolean) => void; // [NEW] Select all or none
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -44,13 +41,10 @@ function calculateItemCost(quantity: number, price: string): string {
 function createEmptyCart(): Cart {
   return {
     id: undefined,
-    checkoutUrl: '/shop/checkout',
     totalQuantity: 0,
     lines: [],
     cost: {
-      subtotalAmount: { amount: '0', currencyCode: 'VND' },
       totalAmount: { amount: '0', currencyCode: 'VND' },
-      totalTaxAmount: { amount: '0', currencyCode: 'VND' },
     },
   };
 }
@@ -64,7 +58,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<Cart | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedLineIds, setSelectedLineIds] = useState<string[]>([]); // [NEW]
 
   // Fetch cart on mount
   const refreshCart = useCallback(async () => {
@@ -72,6 +65,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       const data = await cartApi.getCart();
+      if (data) {
+        // Ensure totalQuantity is calculated correctly
+        data.totalQuantity = data.lines.reduce((sum, item) => sum + item.quantity, 0);
+      }
       setCart(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Lỗi tải giỏ hàng');
@@ -85,40 +82,40 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [refreshCart]);
 
   // Add item - optimistic update
-  const addCartItem = useCallback((variant: ProductVariant, product: Product) => {
+  const addCartItem = useCallback((product: Product, quantity: number = 1) => {
     // Optimistic update
     setCart(prev => {
       const currentCart = prev || createEmptyCart();
       const existingIndex = currentCart.lines.findIndex(
-        item => item.merchandise.id === variant.id
+        item => item.merchandise.id === product.id
       );
 
       let newLines: CartItem[];
       if (existingIndex >= 0) {
         newLines = currentCart.lines.map((item, i) =>
           i === existingIndex
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
         const newItem: CartItem = {
           id: crypto.randomUUID(),
-          quantity: 1,
+          quantity: quantity,
           cost: {
             totalAmount: {
-              amount: variant.price.amount,
-              currencyCode: variant.price.currencyCode,
+              amount: (Number(product.price.amount) * quantity).toString(),
+              currencyCode: product.price.currencyCode,
             },
           },
           merchandise: {
-            id: variant.id,
-            title: variant.title,
-            selectedOptions: variant.selectedOptions,
+            id: product.id,
+            title: product.title,
             product: {
               id: product.id,
               handle: product.handle,
               title: product.title,
               featuredImage: product.featuredImage,
+              price: product.price
             },
           },
         };
@@ -127,7 +124,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       const totalQuantity = newLines.reduce((sum, item) => sum + item.quantity, 0);
       const totalAmount = newLines.reduce(
-        (sum, item) => sum + Number(item.cost.totalAmount.amount) * item.quantity,
+        (sum, item) => sum + Number(item.cost.totalAmount.amount),
         0
       );
 
@@ -138,14 +135,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         cost: {
           ...currentCart.cost,
           totalAmount: { amount: totalAmount.toString(), currencyCode: 'VND' },
-          subtotalAmount: { amount: totalAmount.toString(), currencyCode: 'VND' },
         },
       };
     });
 
     // Server sync
-    cartApi.addItem(variant.id, 1)
+    cartApi.addItem(product.id, quantity)
       .then((updatedCart) => {
+        if (updatedCart) {
+          updatedCart.totalQuantity = updatedCart.lines.reduce((sum, item) => sum + item.quantity, 0);
+        }
         setCart(updatedCart);
       })
       .catch(err => {
@@ -186,18 +185,48 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       };
     });
 
-    // Find the line item and sync with server
+    // Sync with server
     const lineItem = cart?.lines.find(item => item.merchandise.id === merchandiseId);
-    if (lineItem?.id) {
-      const newQuantity = updateType === 'delete' 
-        ? 0 
-        : updateType === 'plus' 
-          ? lineItem.quantity + 1 
-          : lineItem.quantity - 1;
+    if (!lineItem) return;
 
-      cartApi.updateItem(lineItem.id, newQuantity)
+    if (updateType === 'delete') {
+      cartApi.removeItem(merchandiseId)
         .then((updatedCart) => {
-           setCart(updatedCart);
+          if (updatedCart) {
+            updatedCart.totalQuantity = updatedCart.lines.reduce((sum, item) => sum + item.quantity, 0);
+          }
+          setCart(updatedCart);
+        })
+        .catch(err => {
+          setError(err.message);
+          refreshCart();
+        });
+      return;
+    }
+
+    const newQuantity = updateType === 'plus' 
+        ? lineItem.quantity + 1 
+        : lineItem.quantity - 1;
+
+    if (newQuantity <= 0) {
+      cartApi.removeItem(merchandiseId)
+        .then((updatedCart) => {
+          if (updatedCart) {
+            updatedCart.totalQuantity = updatedCart.lines.reduce((sum, item) => sum + item.quantity, 0);
+          }
+          setCart(updatedCart);
+        })
+        .catch(err => {
+          setError(err.message);
+          refreshCart();
+        });
+    } else {
+      cartApi.updateItem(merchandiseId, newQuantity)
+        .then((updatedCart) => {
+          if (updatedCart) {
+            updatedCart.totalQuantity = updatedCart.lines.reduce((sum, item) => sum + item.quantity, 0);
+          }
+          setCart(updatedCart);
         })
         .catch(err => {
           setError(err.message);
@@ -206,34 +235,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cart, cartApi, refreshCart]);
 
-  // [NEW] Toggle selection
-  const toggleLineItem = useCallback((lineId: string) => {
-    setSelectedLineIds(prev => 
-      prev.includes(lineId) 
-        ? prev.filter(id => id !== lineId) 
-        : [...prev, lineId]
-    );
-  }, []);
-
-  // [NEW] Select All
-  const selectAllResult = useCallback((selected: boolean) => {
-    if (!cart) return;
-    if (selected) {
-      // Filter out undefined IDs just in case
-      const allIds = cart.lines.map(item => item.id).filter((id): id is string => !!id);
-      setSelectedLineIds(allIds);
-    } else {
-      setSelectedLineIds([]);
-    }
-  }, [cart]);
-
-  // Sync selection with cart changes (remove IDs that are no longer in cart)
-  useEffect(() => {
-    if (cart) {
-      const currentIds = cart.lines.map(item => item.id);
-      setSelectedLineIds(prev => prev.filter(id => currentIds.includes(id)));
-    }
-  }, [cart]);
 
   const value = useMemo(() => ({
     cart,
@@ -242,10 +243,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     addCartItem,
     updateCartItem,
     refreshCart,
-    selectedLineIds,
-    toggleLineItem,
-    selectAllResult,
-  }), [cart, isLoading, error, addCartItem, updateCartItem, refreshCart, selectedLineIds, toggleLineItem, selectAllResult]);
+  }), [cart, isLoading, error, addCartItem, updateCartItem, refreshCart]);
 
   return (
     <CartContext.Provider value={value}>
