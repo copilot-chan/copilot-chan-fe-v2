@@ -97,7 +97,12 @@ export default function ProductsPage() {
                             {product.title}
                         </TableCell>
                         <TableCell>
-                           {product.priceRange.minVariantPrice.amount} {product.priceRange.minVariantPrice.currencyCode}
+                           {product.price.amount} {product.price.currencyCode}
+                           {product.originalPrice && Number(product.originalPrice.amount) > Number(product.price.amount) && (
+                               <span className="ml-2 text-muted-foreground line-through text-xs">
+                                   {product.originalPrice.amount} {product.originalPrice.currencyCode}
+                               </span>
+                           )}
                         </TableCell>
                         <TableCell className="hidden md:table-cell capitalize">
                             <div className="flex flex-wrap gap-1">

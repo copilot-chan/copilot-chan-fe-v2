@@ -7,16 +7,20 @@ import { createAdminApiClient } from '@/lib/ecomerce/foodshop/api/admin';
 import { Collection } from '@/lib/ecomerce/foodshop/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { useAuth } from '@/components/providers/auth-provider';
+
 export default function EditCollectionPage() {
   const params = useParams();
   const id = params.id as string;
   const [collection, setCollection] = useState<Collection | null>(null);
   const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
   useEffect(() => {
     async function fetchCollection() {
+      if (!token) return;
       try {
-        const client = createAdminApiClient();
+        const client = createAdminApiClient({ token });
         const data = await client.getCollection(id);
         setCollection(data);
       } catch (e) {
@@ -26,7 +30,7 @@ export default function EditCollectionPage() {
       }
     }
     fetchCollection();
-  }, [id]);
+  }, [id, token]);
 
   if (loading) {
       return <div className="space-y-6">
@@ -40,7 +44,8 @@ export default function EditCollectionPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold tracking-tight">Edit Collection</h1>
-      <CollectionForm initialData={collection} id={id} />
+      {/* Pass collection.id (UUID) instead of params.id (which might be handle) */}
+      <CollectionForm initialData={collection} id={collection.id} />
     </div>
   );
 }

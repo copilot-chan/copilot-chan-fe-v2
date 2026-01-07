@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createAdminApiClient } from '@/lib/ecomerce/foodshop/api/admin';
 import { User } from '@/lib/ecomerce/foodshop/types';
+import { useAuth } from '@/components/providers/auth-provider';
 import {
   Table,
   TableBody,
@@ -17,11 +18,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchUsers = async () => {
+        if (!token) return;
         try {
-            const client = createAdminApiClient();
+            const client = createAdminApiClient({ token });
             const data = await client.getUsers();
             setUsers(data);
         } catch (error) {
@@ -31,7 +34,7 @@ export default function UsersPage() {
         }
     }
     fetchUsers();
-  }, []);
+  }, [token]);
 
   return (
     <div className="space-y-6">
@@ -63,11 +66,11 @@ export default function UsersPage() {
                     <TableRow key={user.id}>
                          <TableCell>
                             <Avatar>
-                                <AvatarImage src={user.avatar} />
-                                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={user.avatar || undefined} />
+                                <AvatarFallback>{(user.fullName?.[0] || 'U').toUpperCase()}</AvatarFallback>
                             </Avatar>
                         </TableCell>
-                        <TableCell className="font-medium">{user.name}</TableCell>
+                        <TableCell className="font-medium">{user.fullName}</TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell>
                             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${

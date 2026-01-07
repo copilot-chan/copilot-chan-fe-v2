@@ -72,7 +72,7 @@ export default function CollectionsPage() {
                 </TableRow>
             ) : (
                 collections.map((collection) => (
-                    <TableRow key={collection.handle}>
+                    <TableRow key={collection.id}>
                         <TableCell className="font-medium">
                             {collection.title}
                         </TableCell>
@@ -96,11 +96,11 @@ export default function CollectionsPage() {
                                         In db.json collections just have handle. 
                                         Let's assume handle IS the ID for edit url if id is missing */}
                                     <DropdownMenuItem asChild>
-                                        <Link href={`/admin/collections/${(collection as any).id || collection.handle}`} className="cursor-pointer">
+                                        <Link href={`/admin/collections/${collection.handle}`} className="cursor-pointer">
                                             <Pencil className="mr-2 h-4 w-4" /> Edit
                                         </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleDelete((collection as any).id || collection.handle)} className="text-red-600 cursor-pointer">
+                                    <DropdownMenuItem onClick={() => handleDelete(collection.id)} className="text-red-600 cursor-pointer">
                                         <Trash className="mr-2 h-4 w-4" /> Delete
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
