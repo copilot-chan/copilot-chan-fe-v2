@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import CartModal from '@/components/ecomerce/cart/modal';
+import { UserMenu } from './user-menu';
 import LogoSquare from '@/components/ecomerce/logo-square';
-import { useMenu } from '@/components/providers/ecommerce-api-provider';
-import type { Menu } from '@/lib/ecomerce/foodshop/types';
+import { useCollections } from '@/components/providers/ecommerce-api-provider';
+import type { Collection, Menu } from '@/lib/ecomerce/foodshop/types';
 import Link from 'next/link';
 import MobileMenu from './mobile-menu';
 import Search, { SearchSkeleton } from './search';
@@ -14,21 +15,29 @@ import clsx from 'clsx';
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Shop';
 
 export function Navbar() {
-  const { getMenu } = useMenu();
+  const { getCollections } = useCollections();
   const [menu, setMenu] = useState<Menu[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
 
   useEffect(() => {
-    getMenu('next-js-frontend-header-menu')
-      .then(setMenu)
+    getCollections()
+      .then((collections: Collection[]) => {
+        const dynamicMenu: Menu[] = [
+          { title: 'Tất cả', path: '/search' },
+          ...collections
+        ];
+        setMenu(dynamicMenu);
+      })
       .finally(() => setIsLoading(false));
-  }, [getMenu]);
+  }, [getCollections]);
 
   return (
     <nav className="relative flex items-center justify-between p-4 lg:px-6">
       <div className="block flex-none md:hidden">
-        <MobileMenu menu={menu} />
+        <Suspense fallback={null}>
+          <MobileMenu menu={menu} />
+        </Suspense>
       </div>
       <div className="flex w-full items-center">
         <div className="flex w-full md:w-1/3">
@@ -68,9 +77,12 @@ export function Navbar() {
           )}
         </div>
         <div className="hidden justify-center md:flex md:w-1/3">
-          <Search />
+          <Suspense fallback={<SearchSkeleton />}>
+            <Search />
+          </Suspense>
         </div>
-        <div className="flex justify-end md:w-1/3">
+        <div className="flex justify-end md:w-1/3 gap-4">
+          <UserMenu />
           <CartModal />
         </div>
       </div>

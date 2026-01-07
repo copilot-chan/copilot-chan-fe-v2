@@ -10,6 +10,7 @@ import { Fragment, Suspense, useEffect, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Menu } from '@/lib/ecomerce/foodshop/types';
 import Search, { SearchSkeleton } from './search';
+import { useAuth } from '@/components/providers/auth-provider';
 
 export default function MobileMenu({ menu }: { menu: Menu[] }) {
   const pathname = usePathname();
@@ -17,6 +18,7 @@ export default function MobileMenu({ menu }: { menu: Menu[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const openMobileMenu = () => setIsOpen(true);
   const closeMobileMenu = () => setIsOpen(false);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleResize = () => {
@@ -98,6 +100,25 @@ export default function MobileMenu({ menu }: { menu: Menu[] }) {
                     })}
                   </ul>
                 ) : null}
+                <div className="mt-4 border-t pt-4">
+                    {user ? (
+                        <div className="flex flex-col gap-2">
+                             <div className="flex items-center gap-2 px-2 py-2">
+                                <span className="text-sm font-medium">{user.fullName || user.email}</span>
+                             </div>
+                             <Link href="/account?tab=orders" onClick={closeMobileMenu} className="px-2 py-2 text-xl text-neutral-700 dark:text-neutral-300">
+                                Đơn hàng
+                             </Link>
+                             <button onClick={() => { logout(); closeMobileMenu(); }} className="px-2 py-2 text-left text-xl text-red-600">
+                                Đăng xuất
+                             </button>
+                        </div>
+                    ) : (
+                        <Link href="/login" onClick={closeMobileMenu} className="px-2 py-2 text-xl font-bold text-black dark:text-neutral-100">
+                            Đăng nhập
+                        </Link>
+                    )}
+                </div>
               </div>
             </Dialog.Panel>
           </Transition.Child>

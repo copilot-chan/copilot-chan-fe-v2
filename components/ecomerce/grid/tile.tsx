@@ -1,13 +1,9 @@
 import clsx from 'clsx';
-import Image from 'next/image';
+import { ImageProps } from 'next/image';
+import { SafeImage } from '../common/safe-image';
 import Label from '../label';
 
-export function GridTileImage({
-  isInteractive = true,
-  active,
-  label,
-  ...props
-}: {
+export interface GridTileImageProps extends Partial<ImageProps> {
   isInteractive?: boolean;
   active?: boolean;
   label?: {
@@ -16,7 +12,14 @@ export function GridTileImage({
     currencyCode: string;
     position?: 'bottom' | 'center';
   };
-} & React.ComponentProps<typeof Image>) {
+}
+
+export function GridTileImage({
+  isInteractive = true,
+  active,
+  label,
+  ...props
+}: GridTileImageProps) {
   return (
     <div
       className={clsx(
@@ -29,11 +32,11 @@ export function GridTileImage({
       )}
     >
       {props.src ? (
-        <Image
+        <SafeImage
           className={clsx('relative h-full w-full object-contain', {
             'transition duration-300 ease-in-out group-hover:scale-105': isInteractive
           })}
-          {...props}
+          {...(props as ImageProps)}
         />
       ) : null}
       {label ? (

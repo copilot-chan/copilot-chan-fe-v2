@@ -55,8 +55,8 @@ export function Carousel() {
                 alt={product.title}
                 label={{
                   title: product.title,
-                  amount: product.priceRange.maxVariantPrice.amount,
-                  currencyCode: product.priceRange.maxVariantPrice.currencyCode,
+                  amount: product.price.amount,
+                  currencyCode: product.price.currencyCode,
                 }}
                 src={product.featuredImage?.url}
                 fill

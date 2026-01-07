@@ -10,6 +10,13 @@ import type { Menu } from '@/lib/ecomerce/foodshop/types';
 const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || '';
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Shop';
 
+const FOOTER_MENU: Menu[] = [
+  { title: 'Trang chủ', path: '/' },
+  { title: 'Về chúng tôi', path: '/about' },
+  { title: 'Liên hệ', path: '/contact' },
+  { title: 'Chính sách', path: '/policy' }
+];
+
 const skeleton = 'w-full h-6 animate-pulse rounded-sm bg-neutral-200 dark:bg-neutral-700';
 
 function FooterSkeleton() {
@@ -24,15 +31,8 @@ function FooterSkeleton() {
 }
 
 export default function Footer() {
-  const { getMenu } = useMenu();
-  const [menu, setMenu] = useState<Menu[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    getMenu('next-js-frontend-footer-menu')
-      .then(setMenu)
-      .finally(() => setIsLoading(false));
-  }, [getMenu]);
+  const [menu, setMenu] = useState<Menu[]>(FOOTER_MENU);
+  const [isLoading, setIsLoading] = useState(false);
 
   const currentYear = new Date().getFullYear();
   const copyrightDate = 2023 + (currentYear > 2023 ? `-${currentYear}` : '');
