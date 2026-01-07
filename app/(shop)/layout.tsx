@@ -5,6 +5,8 @@ import { CartProvider } from '@/components/ecomerce/cart/cart-context';
 import { Navbar } from '@/components/ecomerce/layout/navbar';
 import { ReactNode } from 'react';
 import { Toaster } from 'sonner';
+import { CopilotkitPopup } from '@/components/chat/CopilotkitPopup';
+import { AgUITools } from '@/components/chat/actions/AgUITools';
 
 export default function ShopLayout({ children }: { children: ReactNode }) {
     return (
@@ -12,7 +14,9 @@ export default function ShopLayout({ children }: { children: ReactNode }) {
                 <EcommerceApiProvider>
                     <CartProvider>
                         <Navbar />
+                        <AgUITools />
                         <main>{children}</main>
+                        <CopilotkitPopup />
                         <Toaster position="bottom-right" />
                     </CartProvider>
                 </EcommerceApiProvider>

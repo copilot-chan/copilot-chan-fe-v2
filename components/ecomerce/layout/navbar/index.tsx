@@ -25,7 +25,7 @@ export function Navbar() {
       .then((collections: Collection[]) => {
         const dynamicMenu: Menu[] = [
           { title: 'Tất cả', path: '/search' },
-          ...collections
+          ...collections.slice(0, 3) 
         ];
         setMenu(dynamicMenu);
       })
