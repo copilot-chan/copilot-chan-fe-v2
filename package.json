@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "json-server": "json-server --watch db.json --port 3001"
+    "json-server": "node server.js"
   },
   "dependencies": {
     "@ag-ui/client": "0.0.42",
@@ -19,6 +19,7 @@
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/themes": "^3.2.1",
     "@tailwindcss/postcss": "^4.1.15",
     "@tailwindcss/typography": "^0.5.19",
@@ -52,8 +53,8 @@
     "baseline-browser-mapping": "^2.9.5",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
+    "json-server": "^0.17.4",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "json-server": "^0.17.4"
+    "typescript": "^5"
   }
 }
