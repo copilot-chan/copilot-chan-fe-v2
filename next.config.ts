@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'sbwvoktqbilplgfwcfic.storage.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.openfoodfacts.org',
+      },
     ],
   },
 };

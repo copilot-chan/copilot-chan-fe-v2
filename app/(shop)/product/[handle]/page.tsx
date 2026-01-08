@@ -92,7 +92,7 @@ export default function ProductPage() {
     return notFound();
   }
 
-    const productJsonLd = {
+  const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
@@ -100,7 +100,7 @@ export default function ProductPage() {
     image: product.featuredImage?.url,
     offers: {
       '@type': 'AggregateOffer',
-      availability: product.availableForSale
+      availability: product.status === 'active'
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
       priceCurrency: product.price.currencyCode,

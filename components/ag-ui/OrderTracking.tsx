@@ -31,7 +31,7 @@ interface OrderItem {
   image_url?: string; // Optional in spec but good to have
 }
 
-interface OrderTrackingProps {
+export interface OrderTrackingProps {
   order_id: string;
   current_status: OrderStatus;
   total_amount: number;
