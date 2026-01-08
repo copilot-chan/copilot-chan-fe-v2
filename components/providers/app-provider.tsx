@@ -15,7 +15,7 @@ import { TooltipProvider } from '../ui/tooltip';
 import { HTMLPreviewProvider } from './html-preview-provider';
 
 function CopilotKitWrapper({ children }: { children: React.ReactNode }) {
-    const { token } = useAuth();
+    const { token, user } = useAuth();
     const { sessionId } = useChatSession();
 
     return (
@@ -23,6 +23,7 @@ function CopilotKitWrapper({ children }: { children: React.ReactNode }) {
             key={sessionId} // Force remount to clear state when switching sessions
             runtimeUrl="/api/copilotkit"
             properties={token ? { authorization: `Bearer ${token}` } : {}}
+            headers={user?.id ? { 'x-user-id': user.id } : {}}
             agent="chat_agent"
             showDevConsole={
                 process.env.NODE_ENV === 'development' ||
