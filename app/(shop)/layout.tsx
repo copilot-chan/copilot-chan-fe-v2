@@ -17,7 +17,6 @@ export default function ShopLayout({ children }: { children: ReactNode }) {
                         <AgUITools />
                         <main>{children}</main>
                         <CopilotkitPopup />
-                        <Toaster position="bottom-right" />
                     </CartProvider>
                 </EcommerceApiProvider>
         </div>
